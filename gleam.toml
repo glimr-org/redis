@@ -1,12 +1,12 @@
 name = "glimr_redis"
-version = "0.1.0"
+version = "0.2.0"
 
 description = "Redis cache driver for the Glimr web framework"
 licences = ["MIT"]
 repository = { type = "github", user = "glimr-org", repo = "redis" }
 
 [dependencies]
-glimr = ">= 0.6.0 and < 0.7.0"
+glimr = ">= 0.7.0 and < 0.8.0"
 valkyrie = ">= 1.0.0 and < 2.0.0"
 bath = ">= 4.0.0 and < 5.0.0"
 mug = ">= 2.0.0 and < 3.0.0"
