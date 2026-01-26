@@ -5,6 +5,7 @@
 //// checkout/checkin automatically.
 
 import gleam/erlang/process
+import gleam/option
 import gleam/otp/static_supervisor as supervisor
 import glimr/cache/driver.{type CacheStore, RedisStore}
 import valkyrie
@@ -29,15 +30,15 @@ pub opaque type Pool {
 ///
 pub fn start_pool(store: CacheStore) -> Pool {
   let #(name, url, pool_size) = extract_redis_config(store)
-  let conn_receiver = process.new_subject()
+  let pool_name = process.new_name("glimr_redis_pool_" <> name)
 
   let assert Ok(config) = valkyrie.url_config(url)
 
   let child_spec =
     valkyrie.supervised_pool(
-      config: config,
-      receiver: conn_receiver,
+      config,
       size: pool_size,
+      name: option.Some(pool_name),
       timeout: 5000,
     )
 
@@ -46,7 +47,7 @@ pub fn start_pool(store: CacheStore) -> Pool {
     |> supervisor.add(child_spec)
     |> supervisor.start
 
-  let assert Ok(conn) = process.receive(conn_receiver, 5000)
+  let conn = valkyrie.named_connection(pool_name)
 
   let prefix = key_prefix <> ":" <> name
   Pool(conn: conn, timeout: 5000, prefix: prefix)

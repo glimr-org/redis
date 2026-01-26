@@ -1,5 +1,5 @@
 name = "glimr_redis"
-version = "0.3.0"
+version = "0.4.0"
 
 description = "Redis cache driver for the Glimr web framework"
 licences = ["MIT"]
@@ -7,10 +7,10 @@ repository = { type = "github", user = "glimr-org", repo = "redis" }
 
 [dependencies]
 glimr = ">= 0.8.0 and < 0.9.0"
-valkyrie = ">= 1.0.0 and < 2.0.0"
-bath = ">= 4.0.0 and < 5.0.0"
-mug = ">= 2.0.0 and < 3.0.0"
-gleam_stdlib = ">= 0.44.0 and < 1.0.0"
+valkyrie = ">= 4.0.0 and < 5.0.0"
+bath = ">= 5.0.0 and < 6.0.0"
+mug = ">= 3.0.0 and < 4.0.0"
+gleam_stdlib = ">= 0.44.0 and < 2.0.0"
 gleam_erlang = ">= 1.3.0 and < 2.0.0"
 gleam_otp = ">= 1.2.0 and < 2.0.0"
 gleam_json = ">= 3.0.0 and < 4.0.0"

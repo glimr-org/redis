@@ -342,7 +342,7 @@ fn error_to_string(error: valkyrie.Error) -> String {
     valkyrie.NotFound -> "Not found"
     valkyrie.Conflict -> "Conflict"
     valkyrie.RespError(msg) -> "RESP error: " <> msg
-    valkyrie.ConnectionError -> "Connection error"
+    valkyrie.ConnectError(_) -> "Connection error"
     valkyrie.Timeout -> "Timeout"
     valkyrie.TcpError(_) -> "TCP error"
     valkyrie.ServerError(msg) -> "Server error: " <> msg
