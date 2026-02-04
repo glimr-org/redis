@@ -8,22 +8,34 @@ import gleam/dynamic/decode
 import gleam/json
 import gleeunit/should
 import glimr/cache/cache.{ComputeError, NotFound, SerializationError}
-import glimr/cache/driver.{RedisStore}
 import glimr_redis/cache/cache as redis_cache
 import glimr_redis/redis
+import simplifile
 
 const test_redis_url = "redis://localhost:6379"
 
-const test_pool_size = 5
+const config_dir = "config"
+
+const config_file = "config/cache.toml"
+
+fn setup_config() -> Nil {
+  let _ = simplifile.create_directory_all(config_dir)
+  let _ = simplifile.write(config_file, "[stores.test]
+  driver = \"redis\"
+  url = \"" <> test_redis_url <> "\"
+  pool_size = 5
+
+[stores.other]
+  driver = \"redis\"
+  url = \"" <> test_redis_url <> "\"
+  pool_size = 5
+")
+  Nil
+}
 
 fn setup_test_pool() {
-  let store =
-    RedisStore(
-      name: "test",
-      url: Ok(test_redis_url),
-      pool_size: Ok(test_pool_size),
-    )
-  redis.start("test", [store])
+  setup_config()
+  redis.start("test")
 }
 
 // ------------------------------------------------------------- get/put
@@ -432,14 +444,8 @@ pub fn flush_empty_cache_succeeds_test() {
 pub fn flush_only_affects_pool_prefix_test() {
   let pool = setup_test_pool()
 
-  // Create a second pool with different name
-  let other_store =
-    RedisStore(
-      name: "other",
-      url: Ok(test_redis_url),
-      pool_size: Ok(test_pool_size),
-    )
-  let other_pool = redis.start("other", [other_store])
+  // Create a second pool with different name (config already has "other" store)
+  let other_pool = redis.start("other")
 
   // Add keys to both pools
   redis_cache.put(pool, "test_flush_key", "test_value", 3600) |> should.be_ok()
