@@ -12,6 +12,7 @@
 
 import glimr/cache/driver
 import glimr/config/cache
+import glimr/session/session.{type Session}
 import glimr/session/store
 import glimr_redis/cache/pool.{type Pool}
 import glimr_redis/session/session_store
@@ -40,8 +41,9 @@ pub fn start(name: String) -> Pool {
 /// cleanup needed. This must be called at boot before any
 /// requests arrive.
 ///
-pub fn start_session(pool: Pool) -> Nil {
+pub fn start_session(pool: Pool) -> Session {
   let session = session_store.create(pool)
-
   store.cache_store(session)
+
+  session.empty()
 }
