@@ -1,9 +1,0 @@
-[stores.test]
-  driver = "redis"
-  url = "redis://localhost:6379"
-  pool_size = 5
-
-[stores.other]
-  driver = "redis"
-  url = "redis://localhost:6379"
-  pool_size = 5
