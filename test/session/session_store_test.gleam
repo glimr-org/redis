@@ -47,7 +47,7 @@ fn cleanup_config() -> Nil {
 fn with_clean_session(f: fn() -> a) -> a {
   setup_config()
 
-  let pool = redis.start("session_test")
+  let pool = redis.start_pool("session_test")
 
   // Create and cache the session store
   let session = session_store.create(pool)
