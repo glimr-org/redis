@@ -1,5 +1,6 @@
 import gleam/dict
 import gleeunit/should
+import glimr/config
 import glimr/session/store
 import glimr_redis/redis
 import glimr_redis/session/session_store
@@ -23,23 +24,21 @@ fn setup_config() -> Nil {
   let _ =
     simplifile.write(
       session_config_file,
-      "[session]
-  table = \"sessions\"
-  cookie = \"test_session\"
-  lifetime = 120
-  expire_on_close = false
+      "table = \"sessions\"
+cookie = \"test_session\"
+lifetime = 120
+expire_on_close = false
 ",
     )
-  clear_cache_config()
-  clear_session_config()
+  clear_config_cache()
+  config.load()
   Nil
 }
 
 fn cleanup_config() -> Nil {
   let _ = simplifile.delete(cache_config_file)
   let _ = simplifile.delete(session_config_file)
-  clear_cache_config()
-  clear_session_config()
+  clear_config_cache()
   clear_session_store()
   Nil
 }
@@ -205,11 +204,8 @@ pub fn multiple_sessions_independent_test() {
 
 // ------------------------------------------------------------- FFI Helpers
 
-@external(erlang, "glimr_session_test_ffi", "clear_cache_config")
-fn clear_cache_config() -> Nil
-
-@external(erlang, "glimr_session_test_ffi", "clear_session_config")
-fn clear_session_config() -> Nil
+@external(erlang, "glimr_session_test_ffi", "clear_config_cache")
+fn clear_config_cache() -> Nil
 
 @external(erlang, "glimr_session_test_ffi", "clear_session_store")
 fn clear_session_store() -> Nil

@@ -11,7 +11,7 @@
 
 import gleam/dict
 import gleam/option.{None, Some}
-import glimr/config/session as session_config
+import glimr/config
 import glimr/session/payload
 import glimr/session/store.{type SessionStore}
 import glimr_redis/cache/pool.{type Pool}
@@ -29,8 +29,7 @@ import valkyrie
 ///
 @internal
 pub fn create(pool: Pool) -> SessionStore {
-  let config = session_config.load()
-  let lifetime = config.lifetime
+  let lifetime = config.get_int("session.lifetime")
 
   store.new(
     load: fn(session_id) { load(pool, session_id) },

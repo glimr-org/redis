@@ -8,6 +8,7 @@ import gleam/dynamic/decode
 import gleam/json
 import gleeunit/should
 import glimr/cache/cache.{NotFound, SerializationError}
+import glimr/config
 import glimr_redis/redis
 import simplifile
 
@@ -18,6 +19,7 @@ const config_dir = "config"
 const config_file = "config/cache.toml"
 
 fn setup_config() -> Nil {
+  clear_config_cache()
   let _ = simplifile.create_directory_all(config_dir)
   let _ = simplifile.write(config_file, "[stores.test]
   driver = \"redis\"
@@ -29,8 +31,12 @@ fn setup_config() -> Nil {
   url = \"" <> test_redis_url <> "\"
   pool_size = 5
 ")
+  config.load()
   Nil
 }
+
+@external(erlang, "glimr_session_test_ffi", "clear_config_cache")
+fn clear_config_cache() -> Nil
 
 fn setup_test_pool() {
   setup_config()

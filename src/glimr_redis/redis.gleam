@@ -12,7 +12,6 @@
 
 import glimr/cache/cache.{type CachePool}
 import glimr/cache/driver.{type CacheStore}
-import glimr/config/cache as cache_config
 import glimr/session/session.{type Session}
 import glimr/session/store
 import glimr_redis/cache/cache as redis_cache
@@ -59,7 +58,7 @@ pub fn start_session(redis_pool: Pool) -> Session {
 ///
 @internal
 pub fn start_pool(name: String) -> Pool {
-  let stores = cache_config.load()
+  let stores = driver.load_stores()
   let store = driver.find_by_name(name, stores)
 
   pool.start_pool(store)
