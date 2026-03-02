@@ -1,6 +1,6 @@
 import gleam/dict
 import gleeunit/should
-import glimr/config
+import glimr/config/config
 import glimr/session/store
 import glimr_redis/redis
 import glimr_redis/session/session_store

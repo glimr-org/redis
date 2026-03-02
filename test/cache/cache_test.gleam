@@ -8,7 +8,7 @@ import gleam/dynamic/decode
 import gleam/json
 import gleeunit/should
 import glimr/cache/cache.{NotFound, SerializationError}
-import glimr/config
+import glimr/config/config
 import glimr_redis/redis
 import simplifile
 

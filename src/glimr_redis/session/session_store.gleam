@@ -11,7 +11,7 @@
 
 import gleam/dict
 import gleam/option.{None, Some}
-import glimr/config
+import glimr/config/config
 import glimr/session/payload
 import glimr/session/store.{type SessionStore}
 import glimr_redis/cache/pool.{type Pool}
