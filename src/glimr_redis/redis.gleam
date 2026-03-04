@@ -12,8 +12,7 @@
 
 import glimr/cache/cache.{type CachePool}
 import glimr/cache/driver.{type CacheStore}
-import glimr/session/session.{type Session}
-import glimr/session/store
+import glimr/session/store.{type SessionStore}
 import glimr_redis/cache/cache as redis_cache
 import glimr_redis/cache/pool.{type Pool}
 import glimr_redis/session/session_store
@@ -31,20 +30,15 @@ pub fn start(name: String) -> CachePool {
   wrap_pool(internal)
 }
 
-/// Session middleware needs to load, save, and destroy sessions
-/// on every request, but it shouldn't care whether Redis,
-/// PostgreSQL, or SQLite is behind it. Registering the store in
-/// persistent_term at boot means the middleware just asks "give
-/// me the session store" and gets one — no config lookups on
-/// every request. Redis is nice here because key TTLs handle
-/// expiration automatically, so unlike the database stores
-/// there's no garbage collection callback to worry about.
+/// Sessions need a backing store, and Redis is the go-to for
+/// multi-server deployments where in-memory stores won't work.
+/// This starts a Redis pool and returns a SessionStore you can
+/// pass straight to `session.setup()` in your bootstrap — same
+/// one-liner pattern as starting a cache.
 ///
-pub fn start_session(redis_pool: Pool) -> Session {
-  let session = session_store.create(redis_pool)
-  store.cache_store(session)
-
-  session.empty()
+pub fn session_store(name: String) -> SessionStore {
+  let internal = start_pool(name)
+  session_store.create(internal)
 }
 
 // ------------------------------------------------------------- Internal Public Functions
