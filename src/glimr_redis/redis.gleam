@@ -10,9 +10,8 @@
 //// loading and plumbing.
 ////
 
-import glimr/cache/cache.{type CachePool}
-import glimr/cache/driver.{type CacheStore}
-import glimr/session/store.{type SessionStore}
+import glimr/cache.{type CachePool, type CacheStore}
+import glimr/session.{type SessionStore}
 import glimr_redis/cache/cache as redis_cache
 import glimr_redis/cache/pool.{type Pool}
 import glimr_redis/session/session_store
@@ -52,8 +51,8 @@ pub fn session_store(name: String) -> SessionStore {
 ///
 @internal
 pub fn start_pool(name: String) -> Pool {
-  let stores = driver.load_stores()
-  let store = driver.find_by_name(name, stores)
+  let stores = cache.load_stores()
+  let store = cache.find_by_name(name, stores)
 
   pool.start_pool(store)
 }

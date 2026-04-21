@@ -11,7 +11,7 @@
 import gleam/erlang/process
 import gleam/option
 import gleam/otp/static_supervisor as supervisor
-import glimr/cache/driver.{type CacheStore, RedisStore}
+import glimr/cache.{type CacheStore, RedisStore}
 import valkyrie
 
 // ------------------------------------------------------------- Private Consts

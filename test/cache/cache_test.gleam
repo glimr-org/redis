@@ -7,8 +7,8 @@
 import gleam/dynamic/decode
 import gleam/json
 import gleeunit/should
-import glimr/cache/cache.{NotFound, SerializationError}
-import glimr/config/config
+import glimr/cache.{NotFound, SerializationError}
+import glimr/config
 import glimr_redis/redis
 import simplifile
 
@@ -301,18 +301,16 @@ pub fn get_json_invalid_format_test() {
   let _ = cache.forget(pool, "invalid_json")
 }
 
-// ------------------------------------------------------------- try_remember
+// ------------------------------------------------------------- remember
 
-pub fn try_remember_returns_cached_value_test() {
+pub fn remember_returns_cached_value_test() {
   let pool = setup_test_pool()
 
   cache.put(pool, "cached_remember", "existing_value", 3600)
   |> should.be_ok()
 
   // Compute function should not be called
-  cache.try_remember(pool, "cached_remember", 3600, fn() {
-    Ok("computed_value")
-  })
+  cache.remember(pool, "cached_remember", 3600, fn() { Ok("computed_value") })
   |> should.be_ok()
   |> should.equal("existing_value")
 
@@ -320,12 +318,10 @@ pub fn try_remember_returns_cached_value_test() {
   let _ = cache.forget(pool, "cached_remember")
 }
 
-pub fn try_remember_computes_when_missing_test() {
+pub fn remember_computes_when_missing_test() {
   let pool = setup_test_pool()
 
-  cache.try_remember(pool, "missing_remember", 3600, fn() {
-    Ok("computed_value")
-  })
+  cache.remember(pool, "missing_remember", 3600, fn() { Ok("computed_value") })
   |> should.be_ok()
   |> should.equal("computed_value")
 
@@ -338,10 +334,10 @@ pub fn try_remember_computes_when_missing_test() {
   let _ = cache.forget(pool, "missing_remember")
 }
 
-pub fn try_remember_does_not_cache_errors_test() {
+pub fn remember_does_not_cache_errors_test() {
   let pool = setup_test_pool()
 
-  cache.try_remember(pool, "failing_remember", 3600, fn() { Error(Nil) })
+  cache.remember(pool, "failing_remember", 3600, fn() { Error(Nil) })
   |> should.be_error()
   |> should.equal(Nil)
 
@@ -355,10 +351,10 @@ pub fn try_remember_does_not_cache_errors_test() {
   let _ = cache.forget(pool, "failing_remember")
 }
 
-pub fn try_remember_forever_test() {
+pub fn remember_forever_test() {
   let pool = setup_test_pool()
 
-  cache.try_remember_forever(pool, "permanent_remember", fn() { Ok("computed") })
+  cache.remember_forever(pool, "permanent_remember", fn() { Ok("computed") })
   |> should.be_ok()
   |> should.equal("computed")
 
@@ -370,16 +366,16 @@ pub fn try_remember_forever_test() {
   let _ = cache.forget(pool, "permanent_remember")
 }
 
-// ------------------------------------------------------------- try_remember_json
+// ------------------------------------------------------------- remember_json
 
-pub fn try_remember_json_returns_cached_test() {
+pub fn remember_json_returns_cached_test() {
   let pool = setup_test_pool()
   let user = User(name: "Cached", age: 40)
 
   cache.put_json(pool, "user_cached_json", user, user_encoder, 3600)
   |> should.be_ok()
 
-  cache.try_remember_json(
+  cache.remember_json(
     pool,
     "user_cached_json",
     3600,
@@ -394,11 +390,11 @@ pub fn try_remember_json_returns_cached_test() {
   let _ = cache.forget(pool, "user_cached_json")
 }
 
-pub fn try_remember_json_computes_when_missing_test() {
+pub fn remember_json_computes_when_missing_test() {
   let pool = setup_test_pool()
   let user = User(name: "New", age: 20)
 
-  cache.try_remember_json(
+  cache.remember_json(
     pool,
     "new_user_json",
     3600,

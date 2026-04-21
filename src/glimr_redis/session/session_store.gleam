@@ -11,9 +11,8 @@
 
 import gleam/dict
 import gleam/option.{None, Some}
-import glimr/config/config
-import glimr/session/payload
-import glimr/session/store.{type SessionStore}
+import glimr/config
+import glimr/session.{type SessionStore}
 import glimr_redis/cache/pool.{type Pool}
 import valkyrie
 
@@ -31,7 +30,7 @@ import valkyrie
 pub fn create(pool: Pool) -> SessionStore {
   let lifetime = config.get_int("session.lifetime")
 
-  store.new(
+  session.new(
     load: fn(session_id) { load(pool, session_id) },
     save: fn(session_id, data, flash) {
       save(pool, session_id, data, flash, lifetime)
@@ -69,7 +68,7 @@ fn load(
   let key = session_key(pool, session_id)
 
   case valkyrie.get(conn, key, timeout) {
-    Ok(payload_json) -> payload.decode(payload_json)
+    Ok(payload_json) -> session.decode_payload(payload_json)
     Error(_) -> #(dict.new(), dict.new())
   }
 }
@@ -91,7 +90,7 @@ fn save(
   let conn = pool.get_connection(pool)
   let timeout = pool.get_timeout(pool)
   let key = session_key(pool, session_id)
-  let encoded = payload.encode(data, flash)
+  let encoded = session.encode_payload(data, flash)
   let ttl_seconds = lifetime * 60
 
   let options =

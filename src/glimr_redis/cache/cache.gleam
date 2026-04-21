@@ -10,7 +10,7 @@
 //// let the framework do the heavy lifting.
 
 import gleam/option.{None, Some}
-import glimr/cache/cache.{type CacheError, ConnectionError, NotFound}
+import glimr/cache.{type CacheError, ConnectionError, NotFound}
 import glimr_redis/cache/pool.{type Pool}
 import valkyrie
 
