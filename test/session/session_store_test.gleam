@@ -3,7 +3,6 @@ import gleeunit/should
 import glimr/config
 import glimr/session
 import glimr_redis/redis
-import glimr_redis/session/session_store
 import simplifile
 
 const test_redis_url = "redis://localhost:6379"
@@ -46,10 +45,8 @@ fn cleanup_config() -> Nil {
 fn with_clean_session(f: fn() -> a) -> a {
   setup_config()
 
-  let pool = redis.start_pool("session_test")
-
   // Create and cache the session store
-  let store = session_store.create(pool)
+  let store = redis.session_store("session_test")
   session.setup(store)
 
   let result = f()
